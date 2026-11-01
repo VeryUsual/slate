@@ -1,40 +1,19 @@
 package main
 
 import (
-	"image/color"
-
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/layout"
-	"fyne.io/fyne/v2/widget"
-
-	catppuccin "github.com/catppuccin/fyne"
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type Panel struct {
 	AppID      string
 	ID         string
 	Title      string
-	Content    fyne.CanvasObject
 	Workspace  int
 }
 
 var panels = []Panel{}
 
-func ClosePanel(app_id string, id string) []Panel {
-	newPanel := []Panel{}
-
-	for _, p := range panels {
-		if !(p.AppID == app_id && p.ID == id) {
-			newPanel = append(newPanel, p)
-		}
-	}
-
-	return newPanel
-}
-
+/*
 func DrawPanel(panel *Panel, onClose func(fyne.CanvasObject)) fyne.CanvasObject {
 	var p fyne.CanvasObject
 	
@@ -57,38 +36,37 @@ func DrawPanel(panel *Panel, onClose func(fyne.CanvasObject)) fyne.CanvasObject 
 	p = container.NewBorder(header, nil, nil, nil, panel.Content)
 	return p
 }
+*/
 
 func main() {
-	app := app.New()
-	ctp := catppuccin.New()
-	ctp.SetFlavor(catppuccin.Mocha)
-	app.Settings().SetTheme(ctp)
-
-	window := app.NewWindow("Slate")
-	window.Resize(fyne.NewSize(1800, 1000))
-
 	panels = []Panel{
-		Panel{AppID: "author.app1", ID: "main", Title: "1", Content: widget.NewButton("1", func() {}), Workspace: 0},
-		Panel{AppID: "author.app2", ID: "main", Title: "2", Content: widget.NewButton("2", func() {}), Workspace: 0},
-		Panel{AppID: "author.app3", ID: "main", Title: "3", Content: widget.NewButton("3", func() {}), Workspace: 0},
+		Panel{AppID: "author.app1", ID: "main", Title: "1", Workspace: 0},
+		Panel{AppID: "author.app2", ID: "main", Title: "2", Workspace: 0},
+		Panel{AppID: "author.app3", ID: "main", Title: "3", Workspace: 0},
 	}
 
-	grid := container.New(layout.NewGridLayout(2))
+	rl.InitWindow(1800, 1000, "Slate")
+	rl.SetTargetFPS(60)
+	defer rl.CloseWindow()
 
-	for i := range panels {
-		panel := panels[i]
+	for !rl.WindowShouldClose() {
+		rl.BeginDrawing()
+		rl.ClearBackground(rl.RayWhite)
 
-		appid, id := panel.AppID, panel.ID
+		i := 0
+		for row := 0; row < 2; row++ {
+			for col := 0; col < 2; col++ {
+				if len(panels) - 1 < i {
+					break
+				}
+				x := col * 500
+				y := row * 500
+				rl.DrawRectangle(int32(x), int32(y), int32(500), int32(500), rl.Color{R: 0, G: 255, B: 0, A: 255})
+				rl.DrawText(panels[i].Title, int32(x + 75), int32(y + 25), int32(20), rl.Color{R: 255, G: 0, B: 0, A: 255})
+				i+=1
+			}
+		}
 
-		paneldrawn := DrawPanel(&panel, func(panel fyne.CanvasObject) {
-			grid.Remove(panel)
-			panels = ClosePanel(appid, id)
-			grid.Refresh()
-		})
-
-		grid.Add(paneldrawn)
+		rl.EndDrawing()
 	}
-
-	window.SetContent(grid)
-	window.ShowAndRun()
 }
