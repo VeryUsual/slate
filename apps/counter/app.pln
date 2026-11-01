@@ -1,0 +1,13 @@
+import slate.iac;
+
+var count = 0;
+
+func up() do
+    count = count + 1;
+end
+
+func down() do
+    count = count - 1;
+end
+
+iac_publish(count, "count");

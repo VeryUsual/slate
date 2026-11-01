@@ -1,0 +1,6 @@
+<layout>
+    <label id="title" text="counter app" />
+    <label id="value" text="0" />
+    <button id="down" text="-" clicked="down();" />
+    <button id="up" text="+" clicked="up();" />
+</layout>
