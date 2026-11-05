@@ -2,9 +2,13 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
+
+const SCREEN_WIDTH = 1850;
+const SCREEN_HEIGHT = 950;
 
 type Panel struct {
 	AppID      string
@@ -82,14 +86,21 @@ func SplitFocusedPanel(n *any, focusedPanel *string) bool {
 	return false
 }
 
-func Update(WMRoot *WMRoot, focusedPanel *string) {
+func Update(WMRoot *WMRoot, focusedPanel *string, currentChord *string) {
+	if rl.IsKeyPressed(rl.KeySpace) {
+		*currentChord += " "
+	}
 	if rl.IsKeyPressed(rl.KeyS) {
+		*currentChord += "s"
+	}
+	if *currentChord == " s" && rl.IsKeyPressed(rl.KeyV) {
+		*currentChord = ""
 		SplitFocusedPanel(&WMRoot.Node, focusedPanel)
 	}
 }
 
-func Draw(WMRoot *WMRoot, focusedPanel string) {
-	drawnPanels := handleSplit(WMRoot.Node, 0, 0, 1850, 950)
+func Draw(WMRoot *WMRoot, focusedPanel string, currentChord *string) {
+	drawnPanels := handleSplit(WMRoot.Node, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 	for _, p := range drawnPanels {
 		rl.DrawRectangle(int32(p.X), int32(p.Y), int32(p.Width), int32(p.Height), rl.Color{R: 37, G: 39, B: 57, A: 255})
 		
@@ -122,6 +133,23 @@ func Draw(WMRoot *WMRoot, focusedPanel string) {
 			rl.Color{R: 255, G: 255, B: 255, A: 255},
 		)
 	}
+
+	keybindHints := ""
+	for keybind, explanation := range KEYBINDS {
+		if strings.HasPrefix(keybind, *currentChord) && *currentChord != "" {
+			keybindHints += "| '" + keybind + "': " + explanation
+		}
+	}
+
+	if keybindHints != "" || *currentChord != "" {
+		rl.DrawText(
+			strings.ReplaceAll(*currentChord, " ", "<space>") + "\n" + keybindHints,
+			35,
+			SCREEN_HEIGHT - 55,
+			int32(25),
+			rl.Color{R: 200, G: 200, B: 255, A: 255},
+		)
+	}
 }
 
 func main() {
@@ -142,16 +170,19 @@ func main() {
 
 	focusedPanel := "author.app1/main"
 
-	rl.InitWindow(1850, 950, "Slate")
+	currentChord := ""
+
+	rl.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Slate")
+	rl.SetExitKey(rl.KeyNull)
 	rl.SetTargetFPS(60)
 	defer rl.CloseWindow()
 
 	for !rl.WindowShouldClose() {
-		Update(&WMRoot, &focusedPanel)
+		Update(&WMRoot, &focusedPanel, &currentChord)
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
-		Draw(&WMRoot, focusedPanel)
+		Draw(&WMRoot, focusedPanel, &currentChord)
 		rl.EndDrawing()
 	}
 }
