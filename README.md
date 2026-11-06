@@ -1,4 +1,16 @@
-# WIP
+# Slate
+
+A fast, powerful, interconnected, customizable workspace. All built on Plenar (inspired by the Interlingua word for "to fill"), our custom programming language.
+
+## Install
+
+### Linux/macOS/Windows
+```shell
+git clone https://github.com/VeryUsual/slate
+cd slate
+go mod download
+go run .
+```
 
 ## License
 
