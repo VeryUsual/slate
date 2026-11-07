@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sort"
 	"strings"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -41,10 +42,17 @@ func Draw(WMRoot *WMRoot, focusedPanel string, currentChord *string) {
 		)
 	}
 
+	keybindKeys := make([]string, 0, len(KEYBINDS))
+	for k := range KEYBINDS {
+		keybindKeys = append(keybindKeys, k)
+	}
+	sort.Strings(keybindKeys)
+
 	keybindHints := ""
-	for keybind, explanation := range KEYBINDS {
+	for _, keybind := range keybindKeys {
+		explanation := KEYBINDS[keybind]
 		if strings.HasPrefix(keybind, *currentChord) && *currentChord != "" {
-			keybindHints += "| '" + keybind + "': " + explanation
+			keybindHints += " | '" + strings.ReplaceAll(keybind, " ", "<space>") + "': " + explanation
 		}
 	}
 

@@ -32,8 +32,14 @@ func main() {
 	rl.SetTargetFPS(60)
 	defer rl.CloseWindow()
 
-	for !rl.WindowShouldClose() {
-		Input_Update(&WMRoot, &focusedPanel, &currentChord)
+	quitSlate := false
+
+	for (!quitSlate) {
+		if rl.WindowShouldClose() {
+			quitSlate = true
+		}
+
+		Input_Update(&WMRoot, &focusedPanel, &currentChord, &quitSlate)
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
