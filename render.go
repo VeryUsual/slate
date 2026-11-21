@@ -52,7 +52,7 @@ func Draw(WMRoot *WMRoot, focusedPanel string, currentChord *string) {
 	for _, keybind := range keybindKeys {
 		explanation := KEYBINDS[keybind]
 		if strings.HasPrefix(keybind, *currentChord) && *currentChord != "" {
-			keybindHints += " | '" + strings.ReplaceAll(keybind, " ", "<space>") + "': " + explanation
+			keybindHints += " | '" + strings.ReplaceAll(keybind, " ", "<space>") + "': " + explanation.Explanation
 		}
 	}
 
